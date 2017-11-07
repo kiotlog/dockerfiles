@@ -19,6 +19,17 @@ CREATE USER kl_decoder WITH
 
 GRANT kl_writers TO kl_decoder;
 
+CREATE USER kl_nodered WITH
+  LOGIN
+  NOSUPERUSER
+  INHERIT
+  NOCREATEDB
+  NOCREATEROLE
+  NOREPLICATION
+  PASSWORD 'KlN0d3r3d';
+
+GRANT kl_writers TO kl_nodered;
+
 -- Readers
 
 CREATE ROLE kl_readers WITH

@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.6.4
+-- Dumped from database version 10.0
 -- Dumped by pg_dump version 10.0
 
 SET statement_timeout = 0;
@@ -14,7 +14,7 @@ SET check_function_bodies = false;
 SET client_min_messages = warning;
 SET row_security = off;
 
--- DROP DATABASE kiotlog;
+DROP DATABASE kiotlog;
 --
 -- Name: kiotlog; Type: DATABASE; Schema: -; Owner: kl_writers
 --
@@ -70,7 +70,7 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: conversions; Type: TABLE; Schema: public; Owner: postgres
+-- Name: conversions; Type: TABLE; Schema: public; Owner: kl_writers
 --
 
 CREATE TABLE conversions (
@@ -97,7 +97,22 @@ CREATE TABLE devices (
 ALTER TABLE devices OWNER TO kl_writers;
 
 --
--- Name: sensor_types; Type: TABLE; Schema: public; Owner: postgres
+-- Name: points; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE points (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    device text NOT NULL,
+    "time" timestamp with time zone DEFAULT now() NOT NULL,
+    flags jsonb DEFAULT '{}'::jsonb NOT NULL,
+    data jsonb DEFAULT '{}'::jsonb NOT NULL
+);
+
+
+ALTER TABLE points OWNER TO postgres;
+
+--
+-- Name: sensor_types; Type: TABLE; Schema: public; Owner: kl_writers
 --
 
 CREATE TABLE sensor_types (
@@ -127,7 +142,7 @@ CREATE TABLE sensors (
 ALTER TABLE sensors OWNER TO kl_writers;
 
 --
--- Name: conversions conversions_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: conversions conversions_id_key; Type: CONSTRAINT; Schema: public; Owner: kl_writers
 --
 
 ALTER TABLE ONLY conversions
@@ -135,19 +150,11 @@ ALTER TABLE ONLY conversions
 
 
 --
--- Name: conversions convertions_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: conversions convertions_pkey; Type: CONSTRAINT; Schema: public; Owner: kl_writers
 --
 
 ALTER TABLE ONLY conversions
     ADD CONSTRAINT convertions_pkey PRIMARY KEY (id);
-
-
---
--- Name: devices devices_id_key; Type: CONSTRAINT; Schema: public; Owner: kl_writers
---
-
-ALTER TABLE ONLY devices
-    ADD CONSTRAINT devices_id_key UNIQUE (id);
 
 
 --
@@ -159,6 +166,14 @@ ALTER TABLE ONLY devices
 
 
 --
+-- Name: devices devices_id_key; Type: CONSTRAINT; Schema: public; Owner: kl_writers
+--
+
+ALTER TABLE ONLY devices
+    ADD CONSTRAINT devices_id_key UNIQUE (id);
+
+
+--
 -- Name: devices devices_pkey; Type: CONSTRAINT; Schema: public; Owner: kl_writers
 --
 
@@ -167,7 +182,15 @@ ALTER TABLE ONLY devices
 
 
 --
--- Name: sensor_types sensor_types_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: points points_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY points
+    ADD CONSTRAINT points_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: sensor_types sensor_types_id_key; Type: CONSTRAINT; Schema: public; Owner: kl_writers
 --
 
 ALTER TABLE ONLY sensor_types
@@ -175,7 +198,7 @@ ALTER TABLE ONLY sensor_types
 
 
 --
--- Name: sensor_types sensor_types_name_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: sensor_types sensor_types_name_key; Type: CONSTRAINT; Schema: public; Owner: kl_writers
 --
 
 ALTER TABLE ONLY sensor_types
@@ -183,7 +206,7 @@ ALTER TABLE ONLY sensor_types
 
 
 --
--- Name: sensor_types sensor_types_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: sensor_types sensor_types_pkey; Type: CONSTRAINT; Schema: public; Owner: kl_writers
 --
 
 ALTER TABLE ONLY sensor_types
@@ -204,6 +227,14 @@ ALTER TABLE ONLY sensors
 
 ALTER TABLE ONLY sensors
     ADD CONSTRAINT sensors_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: points points_device_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY points
+    ADD CONSTRAINT points_device_fkey FOREIGN KEY (device) REFERENCES devices(device) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -238,10 +269,9 @@ GRANT ALL ON SCHEMA public TO PUBLIC;
 
 
 --
--- Name: conversions; Type: ACL; Schema: public; Owner: postgres
+-- Name: conversions; Type: ACL; Schema: public; Owner: kl_writers
 --
 
-GRANT ALL ON TABLE conversions TO kl_writers;
 GRANT SELECT ON TABLE conversions TO kl_readers;
 
 
@@ -253,10 +283,17 @@ GRANT SELECT ON TABLE devices TO kl_readers;
 
 
 --
--- Name: sensor_types; Type: ACL; Schema: public; Owner: postgres
+-- Name: points; Type: ACL; Schema: public; Owner: postgres
 --
 
-GRANT ALL ON TABLE sensor_types TO kl_writers;
+GRANT ALL ON TABLE points TO kl_writers;
+GRANT SELECT ON TABLE points TO kl_readers;
+
+
+--
+-- Name: sensor_types; Type: ACL; Schema: public; Owner: kl_writers
+--
+
 GRANT SELECT ON TABLE sensor_types TO kl_readers;
 
 
