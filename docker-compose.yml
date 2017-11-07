@@ -70,4 +70,4 @@ services:
     ports:
       - 127.0.0.1:7432:5432
     volumes:
-      - ./srv/lib/postgresql/10:/var/lib/postgresql/data
+      - /var/lib/postgresql/10:/var/lib/postgresql/data
