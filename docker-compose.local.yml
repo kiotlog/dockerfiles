@@ -8,9 +8,9 @@ services:
   nodered:
     image: nodered/node-red-docker
     volumes: 
-    - ./srv/lib/nodered/data:/data
-    - ./srv/lib/nodered/node_flows.json:/data/flows.json
-    - ./srv/lib/nodered/node_settings.js:/data/settings.js
+    - /Users/mancho/Build/srv/lib/nodered/data:/data
+    - /Users/mancho/Build/srv/lib/nodered/node_flows.json:/data/flows.json
+    - /Users/mancho/Build/srv/lib/nodered/node_settings.js:/data/settings.js
     networks:
       ttn:
         aliases:
@@ -21,7 +21,7 @@ services:
   influxdb:
     image: influxdb:alpine
     volumes:
-    - ./srv/lib/influxdb:/var/lib/influxdb
+    - /Users/mancho/Build/srv/lib/influxdb:/var/lib/influxdb
     environment:
     - INFLUXDB_ADMIN_ENABLED=false
     networks:
@@ -35,7 +35,7 @@ services:
   grafana:
     image: grafana/grafana
     volumes:
-    - ./srv/lib/grafana:/var/lib/grafana
+    - /Users/mancho/Build/srv/lib/grafana:/var/lib/grafana
     networks:
       ttn:
         aliases:
@@ -46,8 +46,8 @@ services:
   emqtt:
     image: emqttd-docker-v2.3-rc.2
     volumes:
-      - ./srv/lib/emqttd/etc:/opt/emqttd/etc
-      - ./srv/lib/emqttd/data:/opt/emqttd/data
+      - /Users/mancho/Build/srv/lib/emqttd/etc:/opt/emqttd/etc
+      - /Users/mancho/Build/srv/lib/emqttd/data:/opt/emqttd/data
     networks:
       ttn:
         aliases:
@@ -71,4 +71,4 @@ services:
     ports:
       - 127.0.0.1:7432:5432
     volumes:
-      - ./srv/lib/postgresql/10:/var/lib/postgresql/data
+      - /Users/mancho/Build/srv/lib/postgresql/10:/var/lib/postgresql/data
