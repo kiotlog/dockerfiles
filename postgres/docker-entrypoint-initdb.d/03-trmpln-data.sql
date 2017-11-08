@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\connect kiotlog
+\connect trmpln
 
 -- Dumped from database version 9.6.4
 -- Dumped by pg_dump version 10.0

@@ -2,6 +2,8 @@
 -- PostgreSQL database dump
 --
 
+\connect template1
+
 -- Dumped from database version 10.0
 -- Dumped by pg_dump version 10.0
 
@@ -14,26 +16,12 @@ SET check_function_bodies = false;
 SET client_min_messages = warning;
 SET row_security = off;
 
-DROP DATABASE kiotlog;
 --
--- Name: kiotlog; Type: DATABASE; Schema: -; Owner: kl_writers
+-- Name: template1; Type: COMMENT; Schema: -; Owner: postgres
 --
 
-CREATE DATABASE kiotlog WITH TEMPLATE = template0 ENCODING = 'UTF8' LC_COLLATE = 'en_US.utf8' LC_CTYPE = 'en_US.utf8';
+COMMENT ON DATABASE template1 IS 'default template for new databases';
 
-
-ALTER DATABASE kiotlog OWNER TO kl_writers;
-
-\connect kiotlog
-
-SET statement_timeout = 0;
-SET lock_timeout = 0;
-SET idle_in_transaction_session_timeout = 0;
-SET client_encoding = 'UTF8';
-SET standard_conforming_strings = on;
-SET check_function_bodies = false;
-SET client_min_messages = warning;
-SET row_security = off;
 
 --
 -- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
@@ -133,8 +121,8 @@ CREATE TABLE sensors (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     meta jsonb DEFAULT '{}'::jsonb NOT NULL,
     fmt jsonb DEFAULT '{}'::jsonb NOT NULL,
-    conversion uuid DEFAULT '5b635746-c7aa-4604-8f8d-0066fe84a5a2'::uuid,
-    sensor_type uuid DEFAULT '8b4f41b0-48ef-4004-b30c-8560b52cd3b7'::uuid,
+    conversion uuid,
+    sensor_type uuid,
     device_id uuid NOT NULL
 );
 
@@ -234,7 +222,7 @@ ALTER TABLE ONLY sensors
 --
 
 ALTER TABLE ONLY points
-    ADD CONSTRAINT points_device_fkey FOREIGN KEY (device) REFERENCES devices(device) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT points_device_fkey FOREIGN KEY (device) REFERENCES devices(device) ON UPDATE CASCADE;
 
 
 --
@@ -242,7 +230,7 @@ ALTER TABLE ONLY points
 --
 
 ALTER TABLE ONLY sensors
-    ADD CONSTRAINT sensors_conversion_fkey FOREIGN KEY (conversion) REFERENCES conversions(id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT sensors_conversion_fkey FOREIGN KEY (conversion) REFERENCES conversions(id) ON UPDATE CASCADE;
 
 
 --
@@ -250,7 +238,7 @@ ALTER TABLE ONLY sensors
 --
 
 ALTER TABLE ONLY sensors
-    ADD CONSTRAINT sensors_device_id_fkey FOREIGN KEY (device_id) REFERENCES devices(id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT sensors_device_id_fkey FOREIGN KEY (device_id) REFERENCES devices(id) ON UPDATE CASCADE;
 
 
 --
@@ -258,14 +246,7 @@ ALTER TABLE ONLY sensors
 --
 
 ALTER TABLE ONLY sensors
-    ADD CONSTRAINT sensors_sensor_type_fkey FOREIGN KEY (sensor_type) REFERENCES sensor_types(id) ON UPDATE CASCADE ON DELETE CASCADE;
-
-
---
--- Name: public; Type: ACL; Schema: -; Owner: postgres
---
-
-GRANT ALL ON SCHEMA public TO PUBLIC;
+    ADD CONSTRAINT sensors_sensor_type_fkey FOREIGN KEY (sensor_type) REFERENCES sensor_types(id) ON UPDATE CASCADE;
 
 
 --
