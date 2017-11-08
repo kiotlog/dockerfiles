@@ -71,3 +71,15 @@ services:
       - 127.0.0.1:7432:5432
     volumes:
       - /var/lib/postgresql/10:/var/lib/postgresql/data
+
+  sfhr:
+    image: kiotlog/sfhr
+    networks:
+      ttn:
+        aliases:
+          - shfr
+    ports:
+      - 8080:8080
+    command: --host 0.0.0.0 --mqttbroker emqtt 1883
+      
+
