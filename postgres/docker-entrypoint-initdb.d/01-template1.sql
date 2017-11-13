@@ -5,7 +5,7 @@
 \connect template1
 
 -- Dumped from database version 10.0
--- Dumped by pg_dump version 10.0
+-- Dumped by pg_dump version 10.1
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -15,13 +15,6 @@ SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
 SET row_security = off;
-
---
--- Name: template1; Type: COMMENT; Schema: -; Owner: postgres
---
-
-COMMENT ON DATABASE template1 IS 'default template for new databases';
-
 
 --
 -- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
@@ -90,7 +83,7 @@ ALTER TABLE devices OWNER TO kl_writers;
 
 CREATE TABLE points (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
-    device text NOT NULL,
+    device_device text NOT NULL,
     "time" timestamp with time zone DEFAULT now() NOT NULL,
     flags jsonb DEFAULT '{}'::jsonb NOT NULL,
     data jsonb DEFAULT '{}'::jsonb NOT NULL
@@ -121,8 +114,8 @@ CREATE TABLE sensors (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     meta jsonb DEFAULT '{}'::jsonb NOT NULL,
     fmt jsonb DEFAULT '{}'::jsonb NOT NULL,
-    conversion uuid,
-    sensor_type uuid,
+    conversion_id uuid,
+    sensor_type_id uuid,
     device_id uuid NOT NULL
 );
 
@@ -222,7 +215,7 @@ ALTER TABLE ONLY sensors
 --
 
 ALTER TABLE ONLY points
-    ADD CONSTRAINT points_device_fkey FOREIGN KEY (device) REFERENCES devices(device) ON UPDATE CASCADE;
+    ADD CONSTRAINT points_device_fkey FOREIGN KEY (device_device) REFERENCES devices(device) ON UPDATE CASCADE;
 
 
 --
@@ -230,7 +223,7 @@ ALTER TABLE ONLY points
 --
 
 ALTER TABLE ONLY sensors
-    ADD CONSTRAINT sensors_conversion_fkey FOREIGN KEY (conversion) REFERENCES conversions(id) ON UPDATE CASCADE;
+    ADD CONSTRAINT sensors_conversion_fkey FOREIGN KEY (conversion_id) REFERENCES conversions(id) ON UPDATE CASCADE;
 
 
 --
@@ -246,7 +239,7 @@ ALTER TABLE ONLY sensors
 --
 
 ALTER TABLE ONLY sensors
-    ADD CONSTRAINT sensors_sensor_type_fkey FOREIGN KEY (sensor_type) REFERENCES sensor_types(id) ON UPDATE CASCADE;
+    ADD CONSTRAINT sensors_sensor_type_fkey FOREIGN KEY (sensor_type_id) REFERENCES sensor_types(id) ON UPDATE CASCADE;
 
 
 --
