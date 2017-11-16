@@ -72,14 +72,35 @@ services:
     volumes:
       - /var/lib/postgresql/10:/var/lib/postgresql/data
 
-  sfhr:
-    image: kiotlog/sfhr
+  klhr:
+    image: kiotlog/httpreceiver
     networks:
       ttn:
         aliases:
-          - shfr
+          - klhr
+          - httpreceiver
     ports:
       - 8080:8080
-    command: --host 0.0.0.0 --mqttbroker emqtt 1883
+    #environment:
+    # - HOST=0.0.0.0
+    # - PORT=8080
+    # - MQTT_HOST=emqtt
+    # - MQTT_PORT=1883
+    # - PG_USER=postgres
+    # - PG_PASS=postgres
+    # - PG_HOST=postgres
+    # - PG_PORT=5432
+    # - PG_DB=trmpln
+    #command: --host 0.0.0.0 --mqttbroker emqtt 1883 --postgres $${PG_USER} $${PG_PASS} postgres 5432 trmpln
+    command: --host 0.0.0.0 --mqttbroker emqtt 1883 --postgres postgres postgres postgres 5432 trmpln
       
+  pyhttprecv:
+    image: kiotlog/pyhttprecv
+    networks:
+      ttn:
+        aliases:
+          - pyhttprecv
+    ports:
+      - 5000:5000
+    command: --pg-host postgres --pg-port 5432
 
