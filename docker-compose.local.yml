@@ -8,9 +8,9 @@ services:
   nodered:
     image: nodered/node-red-docker
     volumes: 
-    - /Users/mancho/Build/srv/lib/nodered/data:/data
-    - /Users/mancho/Build/srv/lib/nodered/node_flows.json:/data/flows.json
-    - /Users/mancho/Build/srv/lib/nodered/node_settings.js:/data/settings.js
+    - ${HOME}/Build/srv/lib/nodered/data:/data
+    - ${HOME}/Build/srv/lib/nodered/node_flows.json:/data/flows.json
+    - ${HOME}/Build/srv/lib/nodered/node_settings.js:/data/settings.js
     networks:
       ttn:
         aliases:
@@ -21,7 +21,7 @@ services:
   influxdb:
     image: influxdb:alpine
     volumes:
-    - /Users/mancho/Build/srv/lib/influxdb:/var/lib/influxdb
+    - ${HOME}/Build/srv/lib/influxdb:/var/lib/influxdb
     environment:
     - INFLUXDB_ADMIN_ENABLED=false
     networks:
@@ -35,7 +35,7 @@ services:
   grafana:
     image: grafana/grafana
     volumes:
-    - /Users/mancho/Build/srv/lib/grafana:/var/lib/grafana
+    - ${HOME}/Build/srv/lib/grafana:/var/lib/grafana
     networks:
       ttn:
         aliases:
@@ -46,8 +46,8 @@ services:
   emqtt:
     image: emqttd-docker-v2.3-rc.2
     volumes:
-      - /Users/mancho/Build/srv/lib/emqttd/etc:/opt/emqttd/etc
-      - /Users/mancho/Build/srv/lib/emqttd/data:/opt/emqttd/data
+      - ${HOME}/Build/srv/lib/emqttd/etc:/opt/emqttd/etc
+      - ${HOME}/Build/srv/lib/emqttd/data:/opt/emqttd/data
     networks:
       ttn:
         aliases:
@@ -69,6 +69,31 @@ services:
           - kldb
           - postgres
     ports:
-      - 127.0.0.1:7432:5432
+      - 127.0.0.1:7433:5432
     volumes:
-      - /Users/mancho/Build/srv/lib/postgresql/10:/var/lib/postgresql/data
+      - ${HOME}/Build/srv/lib/postgresql/10:/var/lib/postgresql/data
+  
+  klhr:
+    image: kiotlog/httpreceiver
+    depends_on:
+      - postgres
+      - emqtt
+    networks:
+      ttn:
+        aliases:
+          - klhr
+          - httpreceiver
+    ports:
+      - 8080:8080
+    command: --host 0.0.0.0 --mqttbroker emqtt 1883 --postgres postgres postgres postgres 5432 trmpln
+
+  decoder:
+    image: kiotlog/decoder
+    depends_on:
+      - postgres
+      - emqtt
+    networks:
+      ttn:
+        aliases:
+          - decoder
+    command: --mqttbroker emqtt 1883 --postgres postgres postgres postgres 5432 trmpln --topics /+/+/devices/+/up 
