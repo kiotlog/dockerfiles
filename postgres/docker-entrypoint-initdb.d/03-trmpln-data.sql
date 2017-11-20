@@ -57,7 +57,7 @@ d9508fcb-9061-41b6-a112-6849dd7c5739	DHT22_Humidity	{"max": 100, "min": 0}	humid
 -- Data for Name: sensors; Type: TABLE DATA; Schema: public; Owner: kiotlog_writers
 --
 
-COPY sensors (id, meta, fmt, conversion, sensor_type, device_id) FROM stdin;
+COPY sensors (id, meta, fmt, conversion_id, sensor_type_id, device_id) FROM stdin;
 e03995dc-9691-43f3-abcb-fe617060e2ef	{"name": "temperature"}	{"index": 1, "fmt_chr": "h"}	0c57d818-f542-45ff-b710-eae777124aed	2e9e5330-5bde-4f5b-9c1f-52c96d73a05e	98b32d84-a522-4a80-84bc-2bdabe65c0b5
 796c234f-4023-48b8-ba27-e5f31c3bd578	{"name": "humidity"}	{"index": 2, "fmt_chr": "H"}	a31dbdaa-1d56-4bc3-8ee6-facb2a9ada55	6d2504fd-6a10-4295-aa9c-0b4d615941e2	98b32d84-a522-4a80-84bc-2bdabe65c0b5
 9ebc099a-62bd-47cb-a71d-d9d615af12fc	{"name": "temperature_internal"}	{"index": 3, "fmt_chr": "h"}	0c57d818-f542-45ff-b710-eae777124aed	eab4c8d2-7d00-46f3-9492-92525bb3c67d	98b32d84-a522-4a80-84bc-2bdabe65c0b5
