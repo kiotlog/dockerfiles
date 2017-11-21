@@ -53,11 +53,20 @@ services:
           - emqtt
     ports:
       - "1883:1883"
+      - "2883:2883/udp"
       - "8083:8083"
       - "8883:8883"
       - "8084:8084"
       - "18083:18083"
-      - "2883:2883/udp"
+  
+  mqtt-bridge:
+    image: eclipse-mosquitto
+    volumes:
+    - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+    networks: 
+      ttn:
+        aliases:
+          - mqtt-bridge
 
   postgres:
     build: ./postgres
@@ -74,6 +83,9 @@ services:
 
   klhr:
     image: kiotlog/httpreceiver
+    depends_on:
+      - postgres
+      - emqtt
     networks:
       ttn:
         aliases:
@@ -81,19 +93,19 @@ services:
           - httpreceiver
     ports:
       - 8080:8080
-    #environment:
-    # - HOST=0.0.0.0
-    # - PORT=8080
-    # - MQTT_HOST=emqtt
-    # - MQTT_PORT=1883
-    # - PG_USER=postgres
-    # - PG_PASS=postgres
-    # - PG_HOST=postgres
-    # - PG_PORT=5432
-    # - PG_DB=trmpln
-    #command: --host 0.0.0.0 --mqttbroker emqtt 1883 --postgres $${PG_USER} $${PG_PASS} postgres 5432 trmpln
     command: --host 0.0.0.0 --mqttbroker emqtt 1883 --postgres postgres postgres postgres 5432 trmpln
-      
+  
+  decoder:
+    image: kiotlog/decoder
+    depends_on:
+      - postgres
+      - emqtt
+    networks:
+      ttn:
+        aliases:
+          - decoder
+    command: --mqttbroker emqtt 1883 --postgres postgres postgres postgres 5432 trmpln --topics /+/+/devices/+/up       
+  
   pyhttprecv:
     image: kiotlog/pyhttprecv
     networks:

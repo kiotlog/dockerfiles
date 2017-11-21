@@ -8,9 +8,9 @@ services:
   nodered:
     image: nodered/node-red-docker
     volumes: 
-    - ${HOME}/Build/srv/lib/nodered/data:/data
-    - ${HOME}/Build/srv/lib/nodered/node_flows.json:/data/flows.json
-    - ${HOME}/Build/srv/lib/nodered/node_settings.js:/data/settings.js
+    - ${COMPOSE_ROOTFS:-~/Build/srv/lib}/nodered/data:/data
+    - ${COMPOSE_ROOTFS:-~/Build/srv/lib}/nodered/nodered_flows.json:/data/flows.json
+    - ${COMPOSE_ROOTFS:-~/Build/srv/lib}/nodered/nodered_settings.js:/data/settings.js
     networks:
       ttn:
         aliases:
@@ -21,7 +21,7 @@ services:
   influxdb:
     image: influxdb:alpine
     volumes:
-    - ${HOME}/Build/srv/lib/influxdb:/var/lib/influxdb
+    - ${COMPOSE_ROOTFS:-~/Build/srv/lib}/influxdb:/var/lib/influxdb
     environment:
     - INFLUXDB_ADMIN_ENABLED=false
     networks:
@@ -35,7 +35,7 @@ services:
   grafana:
     image: grafana/grafana
     volumes:
-    - ${HOME}/Build/srv/lib/grafana:/var/lib/grafana
+    - ${COMPOSE_ROOTFS:-~/Build/srv/lib}/grafana:/var/lib/grafana
     networks:
       ttn:
         aliases:
@@ -46,8 +46,8 @@ services:
   emqtt:
     image: emqttd-docker-v2.3-rc.2
     volumes:
-      - ${HOME}/Build/srv/lib/emqttd/etc:/opt/emqttd/etc
-      - ${HOME}/Build/srv/lib/emqttd/data:/opt/emqttd/data
+      - ${COMPOSE_ROOTFS:-~/Build/srv/lib}/emqttd/etc:/opt/emqttd/etc
+      - ${COMPOSE_ROOTFS:-~/Build/srv/lib}/emqttd/data:/opt/emqttd/data
     networks:
       ttn:
         aliases:
@@ -59,6 +59,15 @@ services:
       - "8084:8084"
       - "18083:18083"
       - "2883:2883/udp"
+  
+  mqtt-bridge:
+    image: eclipse-mosquitto
+    volumes:
+    - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+    networks: 
+      ttn:
+        aliases:
+          - mqtt-bridge
 
   postgres:
     build: ./postgres
@@ -71,7 +80,7 @@ services:
     ports:
       - 127.0.0.1:7433:5432
     volumes:
-      - ${HOME}/Build/srv/lib/postgresql/10:/var/lib/postgresql/data
+      - ${COMPOSE_ROOTFS:-~/Build/srv/lib}/postgresql/10:/var/lib/postgresql/data
   
   klhr:
     image: kiotlog/httpreceiver
