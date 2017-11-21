@@ -1,6 +1,7 @@
 # Docker Compose for Kiotlog
 
 ## Running locally
+
 ### Create persistent rootfs for containers
 
 Create a directory tree for containers' persistent data and starting configuration:
