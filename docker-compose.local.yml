@@ -96,7 +96,7 @@ services:
           - httpreceiver
     ports:
       - 8080:8080
-    command: --host 0.0.0.0 --mqttbroker emqtt 1883 --postgres postgres postgres postgres 5432 trmpln
+    command: --host 0.0.0.0 --mqttbroker emqtt 1883 --postgres kl_httpreceiver KlR3c3iv3r postgres 5432 trmpln
 
   decoder:
     image: kiotlog/decoder
@@ -107,4 +107,4 @@ services:
       ttn:
         aliases:
           - decoder
-    command: --mqttbroker emqtt 1883 --postgres postgres postgres postgres 5432 trmpln --topics /+/+/devices/+/up 
+    command: --mqttbroker emqtt 1883 --postgres kl_decoder KlD3c0d3r postgres 5432 trmpln --topics /+/+/devices/+/up 

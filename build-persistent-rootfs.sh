@@ -12,7 +12,7 @@ echo "Setting up containers persistent rootfs ["${TARGET_DIR}"]."
 
 for dir in ${DIRS_TO_COPY}; do
     echo -e "\tCopying" $dir
-    echo cp -R $dir ${TARGET_DIR}/
+    cp -R $dir ${TARGET_DIR}/
 done
 echo "Done."
 

@@ -8,8 +8,8 @@ services:
     image: nodered/node-red-docker
     volumes: 
     - /var/lib/nodered/data:/data
-    - /var/lib/nodered/node_flows.json:/data/flows.json
-    - /var/lib/nodered/node_settings.js:/data/settings.js
+    - /var/lib/nodered/nodered_flows.json:/data/flows.json
+    - /var/lib/nodered/nodered_settings.js:/data/settings.js
     networks:
       ttn:
         aliases:
@@ -61,6 +61,8 @@ services:
   
   mqtt-bridge:
     image: eclipse-mosquitto
+    depends_on:
+      - emqtt
     volumes:
     - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
     networks: 
@@ -93,7 +95,7 @@ services:
           - httpreceiver
     ports:
       - 8080:8080
-    command: --host 0.0.0.0 --mqttbroker emqtt 1883 --postgres postgres postgres postgres 5432 trmpln
+    command: --host 0.0.0.0 --mqttbroker emqtt 1883 --postgres kl_httpreceiver KlR3c3iv3r postgres 5432 trmpln
   
   decoder:
     image: kiotlog/decoder
@@ -104,15 +106,14 @@ services:
       ttn:
         aliases:
           - decoder
-    command: --mqttbroker emqtt 1883 --postgres postgres postgres postgres 5432 trmpln --topics /+/+/devices/+/up       
-  
-  pyhttprecv:
-    image: kiotlog/pyhttprecv
-    networks:
-      ttn:
-        aliases:
-          - pyhttprecv
-    ports:
-      - 5000:5000
-    command: --pg-host postgres --pg-port 5432
+    command: --mqttbroker emqtt 1883 --postgres kl_decoder KlD3c0d3r postgres 5432 trmpln --topics /+/+/devices/+/up
 
+  # pyhttprecv:
+  #   image: kiotlog/pyhttprecv
+  #   networks:
+  #     ttn:
+  #       aliases:
+  #         - pyhttprecv
+  #   ports:
+  #     - 5000:5000
+  #   command: --pg-host postgres --pg-port 5432
