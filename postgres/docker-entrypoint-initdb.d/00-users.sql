@@ -60,4 +60,4 @@ CREATE USER kl_httpreceiver WITH
   NOREPLICATION
   PASSWORD 'KlR3c3iv3r';
 
-GRANT kl_readers TO kl_grafana;
+GRANT kl_readers TO kl_httpreceiver;
