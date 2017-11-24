@@ -50,3 +50,14 @@ CREATE USER kl_grafana WITH
   PASSWORD 'KlGr4f4n4';
 
 GRANT kl_readers TO kl_grafana;
+
+CREATE USER kl_httpreceiver WITH
+  LOGIN
+  NOSUPERUSER
+  INHERIT
+  NOCREATEDB
+  NOCREATEROLE
+  NOREPLICATION
+  PASSWORD 'KlR3c3iv3r';
+
+GRANT kl_readers TO kl_grafana;
