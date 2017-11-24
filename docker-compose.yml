@@ -81,7 +81,7 @@ services:
     ports:
       - 127.0.0.1:7432:5432
     volumes:
-      - /var/lib/postgresql/10:/var/lib/postgresql/data
+      - /var/lib/postgres/10:/var/lib/postgresql/data
 
   klhr:
     image: kiotlog/httpreceiver
