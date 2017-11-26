@@ -43,7 +43,7 @@ services:
     - "3000:3000"
 
   emqtt:
-    image: emqttd-docker-v2.3-rc.2
+    image: emqttd-docker-v2.3.0
     volumes:
       - /var/lib/emqttd/etc:/opt/emqttd/etc
       - /var/lib/emqttd/data:/opt/emqttd/data

@@ -44,7 +44,7 @@ services:
     - "3000:3000"
 
   emqtt:
-    image: emqttd-docker-v2.3-rc.2
+    image: emqttd-docker-v2.3.0
     volumes:
       - ${COMPOSE_ROOTFS:-~/Build/srv/lib}/emqttd/etc:/opt/emqttd/etc
       - ${COMPOSE_ROOTFS:-~/Build/srv/lib}/emqttd/data:/opt/emqttd/data
