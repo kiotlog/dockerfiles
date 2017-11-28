@@ -108,6 +108,17 @@ services:
           - decoder
     command: --mqttbroker emqtt 1883 --postgres kl_decoder KlD3c0d3r postgres 5432 trmpln --topics /+/+/devices/+/up
 
+  klsn:
+    image: kiotlog/klsnreceiver
+    depends_on:
+      - postgres
+      - emqtt
+    networks:
+      ttn:
+        aliases:
+          - klsn
+    command: --mqttbroker emqtt 1883 --postgres kl_snreceiver KLSnR3c3iv3r postgres 5432 trmpln
+
   # pyhttprecv:
   #   image: kiotlog/pyhttprecv
   #   networks:
