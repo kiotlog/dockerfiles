@@ -4,7 +4,7 @@
 
 \connect template1
 
--- Dumped from database version 10.0
+-- Dumped from database version 10.1
 -- Dumped by pg_dump version 10.1
 
 SET statement_timeout = 0;
@@ -78,19 +78,19 @@ CREATE TABLE devices (
 ALTER TABLE devices OWNER TO kl_writers;
 
 --
--- Name: points; Type: TABLE; Schema: public; Owner: postgres
+-- Name: points; Type: TABLE; Schema: public; Owner: kl_writers
 --
 
 CREATE TABLE points (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
-    device_device text NOT NULL,
+    device_id uuid NOT NULL,
     "time" timestamp with time zone DEFAULT now() NOT NULL,
     flags jsonb DEFAULT '{}'::jsonb NOT NULL,
     data jsonb DEFAULT '{}'::jsonb NOT NULL
 );
 
 
-ALTER TABLE points OWNER TO postgres;
+ALTER TABLE points OWNER TO kl_writers;
 
 --
 -- Name: sensor_types; Type: TABLE; Schema: public; Owner: kl_writers
@@ -123,14 +123,6 @@ CREATE TABLE sensors (
 ALTER TABLE sensors OWNER TO kl_writers;
 
 --
--- Name: conversions conversions_id_key; Type: CONSTRAINT; Schema: public; Owner: kl_writers
---
-
-ALTER TABLE ONLY conversions
-    ADD CONSTRAINT conversions_id_key UNIQUE (id);
-
-
---
 -- Name: conversions convertions_pkey; Type: CONSTRAINT; Schema: public; Owner: kl_writers
 --
 
@@ -147,14 +139,6 @@ ALTER TABLE ONLY devices
 
 
 --
--- Name: devices devices_id_key; Type: CONSTRAINT; Schema: public; Owner: kl_writers
---
-
-ALTER TABLE ONLY devices
-    ADD CONSTRAINT devices_id_key UNIQUE (id);
-
-
---
 -- Name: devices devices_pkey; Type: CONSTRAINT; Schema: public; Owner: kl_writers
 --
 
@@ -163,19 +147,11 @@ ALTER TABLE ONLY devices
 
 
 --
--- Name: points points_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: points points_pkey; Type: CONSTRAINT; Schema: public; Owner: kl_writers
 --
 
 ALTER TABLE ONLY points
     ADD CONSTRAINT points_pkey PRIMARY KEY (id);
-
-
---
--- Name: sensor_types sensor_types_id_key; Type: CONSTRAINT; Schema: public; Owner: kl_writers
---
-
-ALTER TABLE ONLY sensor_types
-    ADD CONSTRAINT sensor_types_id_key UNIQUE (id);
 
 
 --
@@ -195,14 +171,6 @@ ALTER TABLE ONLY sensor_types
 
 
 --
--- Name: sensors sensors_id_key; Type: CONSTRAINT; Schema: public; Owner: kl_writers
---
-
-ALTER TABLE ONLY sensors
-    ADD CONSTRAINT sensors_id_key UNIQUE (id);
-
-
---
 -- Name: sensors sensors_pkey; Type: CONSTRAINT; Schema: public; Owner: kl_writers
 --
 
@@ -211,11 +179,11 @@ ALTER TABLE ONLY sensors
 
 
 --
--- Name: points points_device_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: points points_device_fkey; Type: FK CONSTRAINT; Schema: public; Owner: kl_writers
 --
 
 ALTER TABLE ONLY points
-    ADD CONSTRAINT points_device_fkey FOREIGN KEY (device_device) REFERENCES devices(device) ON UPDATE CASCADE;
+    ADD CONSTRAINT points_device_fkey FOREIGN KEY (device_id) REFERENCES devices(id) ON UPDATE CASCADE ON DELETE RESTRICT;
 
 
 --
@@ -223,7 +191,7 @@ ALTER TABLE ONLY points
 --
 
 ALTER TABLE ONLY sensors
-    ADD CONSTRAINT sensors_conversion_fkey FOREIGN KEY (conversion_id) REFERENCES conversions(id) ON UPDATE CASCADE;
+    ADD CONSTRAINT sensors_conversion_fkey FOREIGN KEY (conversion_id) REFERENCES conversions(id) ON UPDATE CASCADE ON DELETE SET DEFAULT;
 
 
 --
@@ -231,7 +199,7 @@ ALTER TABLE ONLY sensors
 --
 
 ALTER TABLE ONLY sensors
-    ADD CONSTRAINT sensors_device_id_fkey FOREIGN KEY (device_id) REFERENCES devices(id) ON UPDATE CASCADE;
+    ADD CONSTRAINT sensors_device_id_fkey FOREIGN KEY (device_id) REFERENCES devices(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -239,7 +207,7 @@ ALTER TABLE ONLY sensors
 --
 
 ALTER TABLE ONLY sensors
-    ADD CONSTRAINT sensors_sensor_type_fkey FOREIGN KEY (sensor_type_id) REFERENCES sensor_types(id) ON UPDATE CASCADE;
+    ADD CONSTRAINT sensors_sensor_type_fkey FOREIGN KEY (sensor_type_id) REFERENCES sensor_types(id) ON UPDATE CASCADE ON DELETE RESTRICT;
 
 
 --
@@ -257,7 +225,7 @@ GRANT SELECT ON TABLE devices TO kl_readers;
 
 
 --
--- Name: points; Type: ACL; Schema: public; Owner: postgres
+-- Name: points; Type: ACL; Schema: public; Owner: kl_writers
 --
 
 GRANT ALL ON TABLE points TO kl_writers;
