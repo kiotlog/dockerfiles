@@ -6,7 +6,7 @@ networks:
 services:
   nodered:
     image: nodered/node-red-docker
-    volumes: 
+    volumes:
     - /var/lib/nodered/data:/data
     - /var/lib/nodered/nodered_flows.json:/data/flows.json
     - /var/lib/nodered/nodered_settings.js:/data/settings.js
@@ -16,7 +16,7 @@ services:
         - mynodered
     ports:
     - "1880:1880"
-  
+
   influxdb:
     image: influxdb:alpine
     volumes:
@@ -43,10 +43,13 @@ services:
     - "3000:3000"
 
   emqtt:
-    image: emqttd-docker-v2.3.0
-    volumes:
-      - /var/lib/emqttd/etc:/opt/emqttd/etc
-      - /var/lib/emqttd/data:/opt/emqttd/data
+    image: emqttd-docker-v2.3.3
+    environment:
+      - EMQ_LOG__CONSOLE__LEVEL=error
+      - EMQ_ADMIN_PASSWORD=not_the_default_one
+      - EMQ_LOADED_PLUGINS="emq_recon,emq_modules,emq_retainer,emq_dashboard,emq_sn"
+      - EMQ_MQTT__SN__PORT=2883
+      - EMQ_MQTT__SN__ENABLE_STATS=on
     networks:
       ttn:
         aliases:
@@ -54,18 +57,18 @@ services:
     ports:
       - "1883:1883"
       - "2883:2883/udp"
-      - "8083:8083"
-      - "8883:8883"
-      - "8084:8084"
+      # - "8083:8083"
+      # - "8883:8883"
+      # - "8084:8084"
       - "18083:18083"
-  
+
   mqtt-bridge:
     image: eclipse-mosquitto
     depends_on:
       - emqtt
     volumes:
     - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
-    networks: 
+    networks:
       ttn:
         aliases:
           - mqtt-bridge
@@ -96,7 +99,7 @@ services:
     ports:
       - 8080:8080
     command: --host 0.0.0.0 --mqttbroker emqtt 1883 --postgres kl_httpreceiver KlR3c3iv3r postgres 5432 trmpln
-  
+
   decoder:
     image: kiotlog/decoder
     depends_on:

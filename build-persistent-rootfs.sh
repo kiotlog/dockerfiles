@@ -2,7 +2,7 @@
 
 set -ef
 
-DIRS_TO_COPY="emqttd mosquitto nodered"
+DIRS_TO_COPY="mosquitto nodered"
 BASE_PATH="srv/lib"
 
 TARGET_DIR=${1:-${HOME}/Build/${BASE_PATH}}
