@@ -1,0 +1,68 @@
+version: "3"
+
+networks:
+  ttn:
+    driver: overlay
+
+services:
+  grafana:
+    image: grafana/grafana
+    networks:
+    - ttn
+    ports:
+    - "3000:3000"
+
+  emqtt:
+    image: emqttd-docker-v2.3.0
+    networks:
+    - ttn
+    ports:
+      - "1883:1883"
+      - "2883:2883/udp"
+      - "8083:8083"
+      - "8883:8883"
+      - "8084:8084"
+      - "18083:18083"
+
+  mqtt-bridge:
+    image: eclipse-mosquitto
+    depends_on:
+      - emqtt
+    networks:
+    - ttn
+
+  postgres:
+    image: kiotlog/postgres
+    networks:
+    - ttn
+    ports:
+      - 127.0.0.1:7433:5432
+
+  # klhr:
+  #   image: kiotlog/httpreceiver
+  #   depends_on:
+  #     - postgres
+  #     - emqtt
+  #   networks:
+  #   - ttn
+  #   ports:
+  #     - 8080:8080
+  #   command: --host 0.0.0.0 --mqttbroker emqtt 1883 --postgres kl_httpreceiver KlR3c3iv3r postgres 5432 trmpln
+
+  # decoder:
+  #   image: kiotlog/decoder
+  #   depends_on:
+  #     - postgres
+  #     - emqtt
+  #   networks:
+  #   - ttn
+  #   command: --mqttbroker emqtt 1883 --postgres kl_decoder KlD3c0d3r postgres 5432 trmpln --topics /+/+/devices/+/up
+
+  # klsn:
+  #   image: kiotlog/klsnreceiver
+  #   depends_on:
+  #     - postgres
+  #     - emqtt
+  #   networks:
+  #   - ttn
+  #   command: --mqttbroker emqtt 1883 --postgres kl_snreceiver KLSnR3c3iv3r postgres 5432 trmpln

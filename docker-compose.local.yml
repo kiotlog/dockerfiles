@@ -4,33 +4,6 @@ networks:
   ttn:
 
 services:
-  nodered:
-    image: nodered/node-red-docker
-    volumes:
-      - ${COMPOSE_ROOTFS:-~/Build/srv/lib}/nodered/data:/data
-      - ${COMPOSE_ROOTFS:-~/Build/srv/lib}/nodered/nodered_flows.json:/data/flows.json
-      - ${COMPOSE_ROOTFS:-~/Build/srv/lib}/nodered/nodered_settings.js:/data/settings.js
-    networks:
-      ttn:
-        aliases:
-        - mynodered
-    ports:
-      - "1880:1880"
-
-  influxdb:
-    image: influxdb:alpine
-    volumes:
-      - ${COMPOSE_ROOTFS:-~/Build/srv/lib}/influxdb:/var/lib/influxdb
-    environment:
-      - INFLUXDB_ADMIN_ENABLED=false
-    networks:
-      ttn:
-        aliases:
-        - influxdb
-    ports:
-    # - "8083:8083"
-      - "127.0.0.1:8086:8086"
-
   grafana:
     image: grafana/grafana
     volumes:
@@ -121,3 +94,30 @@ services:
         aliases:
           - klsn
     command: --mqttbroker emqtt 1883 --postgres kl_snreceiver KLSnR3c3iv3r postgres 5432 trmpln
+
+  # nodered:
+  #   image: nodered/node-red-docker
+  #   volumes:
+  #     - ${COMPOSE_ROOTFS:-~/Build/srv/lib}/nodered/data:/data
+  #     - ${COMPOSE_ROOTFS:-~/Build/srv/lib}/nodered/nodered_flows.json:/data/flows.json
+  #     - ${COMPOSE_ROOTFS:-~/Build/srv/lib}/nodered/nodered_settings.js:/data/settings.js
+  #   networks:
+  #     ttn:
+  #       aliases:
+  #       - mynodered
+  #   ports:
+  #     - "1880:1880"
+
+  # influxdb:
+  #   image: influxdb:alpine
+  #   volumes:
+  #     - ${COMPOSE_ROOTFS:-~/Build/srv/lib}/influxdb:/var/lib/influxdb
+  #   environment:
+  #     - INFLUXDB_ADMIN_ENABLED=false
+  #   networks:
+  #     ttn:
+  #       aliases:
+  #       - influxdb
+  #   ports:
+  #   # - "8083:8083"
+  #     - "127.0.0.1:8086:8086"

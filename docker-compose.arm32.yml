@@ -94,13 +94,3 @@ services:
         aliases:
           - klsn
     command: --mqttbroker emqtt 1883 --postgres kl_snreceiver KLSnR3c3iv3r postgres 5432 trmpln
-
-  # pyhttprecv:
-  #   image: kiotlog/pyhttprecv
-  #   networks:
-  #     ttn:
-  #       aliases:
-  #         - pyhttprecv
-  #   ports:
-  #     - 5000:5000
-  #   command: --pg-host postgres --pg-port 5432
