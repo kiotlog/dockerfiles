@@ -4,33 +4,6 @@ networks:
   ttn:
 
 services:
-  nodered:
-    image: nodered/node-red-docker
-    volumes:
-    - /var/lib/nodered/data:/data
-    - /var/lib/nodered/nodered_flows.json:/data/flows.json
-    - /var/lib/nodered/nodered_settings.js:/data/settings.js
-    networks:
-      ttn:
-        aliases:
-        - mynodered
-    ports:
-    - "1880:1880"
-
-  influxdb:
-    image: influxdb:alpine
-    volumes:
-    - /var/lib/influxdb:/var/lib/influxdb
-    environment:
-    - INFLUXDB_ADMIN_ENABLED=false
-    networks:
-      ttn:
-        aliases:
-        - influxdb
-    ports:
-    # - "8083:8083"
-    - "127.0.0.1:8086:8086"
-
   grafana:
     image: grafana/grafana
     volumes:
@@ -67,7 +40,7 @@ services:
     depends_on:
       - emqtt
     volumes:
-    - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+    - /var/lib/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
     networks:
       ttn:
         aliases:
@@ -131,3 +104,30 @@ services:
   #   ports:
   #     - 5000:5000
   #   command: --pg-host postgres --pg-port 5432
+
+  # nodered:
+  #   image: nodered/node-red-docker
+  #   volumes:
+  #   - /var/lib/nodered/data:/data
+  #   - /var/lib/nodered/nodered_flows.json:/data/flows.json
+  #   - /var/lib/nodered/nodered_settings.js:/data/settings.js
+  #   networks:
+  #     ttn:
+  #       aliases:
+  #       - mynodered
+  #   ports:
+  #   - "1880:1880"
+
+  # influxdb:
+  #   image: influxdb:alpine
+  #   volumes:
+  #   - /var/lib/influxdb:/var/lib/influxdb
+  #   environment:
+  #   - INFLUXDB_ADMIN_ENABLED=false
+  #   networks:
+  #     ttn:
+  #       aliases:
+  #       - influxdb
+  #   ports:
+  #   # - "8083:8083"
+  #   - "127.0.0.1:8086:8086"
