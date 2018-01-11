@@ -1,0 +1,106 @@
+version: "3"
+
+networks:
+  ttn:
+
+services:
+  grafana:
+    image: grafana/grafana
+    volumes:
+    - /var/lib/grafana:/var/lib/grafana
+    networks:
+      ttn:
+        aliases:
+        - grafana
+    ports:
+    - "3000:3000"
+
+  emqtt:
+    image: emqttd-docker-v2.3.3
+    environment:
+      - EMQ_LOG__CONSOLE__LEVEL=error
+      - EMQ_ADMIN_PASSWORD=not_the_default_one
+      - EMQ_LOADED_PLUGINS=emq_recon,emq_modules,emq_retainer,emq_dashboard,emq_sn
+      - EMQ_MQTT__SN__PORT=2883
+      - EMQ_MQTT__SN__ENABLE_STATS=on
+    networks:
+      ttn:
+        aliases:
+          - emqtt
+    ports:
+      - "1883:1883"
+      - "2883:2883/udp"
+      # - "8083:8083"
+      # - "8883:8883"
+      # - "8084:8084"
+      - "18083:18083"
+
+  mqtt-bridge:
+    image: toke/mosquitto
+    depends_on:
+      - emqtt
+    volumes:
+      - ./mosquitto:/mqtt/config:ro
+    networks:
+      ttn:
+        aliases:
+          - mqtt-bridge
+
+  postgres:
+    build: ./postgres
+    image: kiotlog/postgres
+    networks:
+      ttn:
+        aliases:
+          - kldb
+          - postgres
+    ports:
+      - 127.0.0.1:7432:5432
+    volumes:
+      - /var/lib/postgres/10:/var/lib/postgresql/data
+
+  klhr:
+    image: kiotlog/httpreceiver
+    depends_on:
+      - postgres
+      - emqtt
+    networks:
+      ttn:
+        aliases:
+          - klhr
+          - httpreceiver
+    ports:
+      - 8080:8080
+    command: --host 0.0.0.0 --mqttbroker emqtt 1883 --postgres kl_httpreceiver KlR3c3iv3r postgres 5432 trmpln
+
+  decoder:
+    image: kiotlog/decoder
+    depends_on:
+      - postgres
+      - emqtt
+    networks:
+      ttn:
+        aliases:
+          - decoder
+    command: --mqttbroker emqtt 1883 --postgres kl_decoder KlD3c0d3r postgres 5432 trmpln --topics /+/+/devices/+/up
+
+  klsn:
+    image: kiotlog/klsnreceiver
+    depends_on:
+      - postgres
+      - emqtt
+    networks:
+      ttn:
+        aliases:
+          - klsn
+    command: --mqttbroker emqtt 1883 --postgres kl_snreceiver KLSnR3c3iv3r postgres 5432 trmpln
+
+  # pyhttprecv:
+  #   image: kiotlog/pyhttprecv
+  #   networks:
+  #     ttn:
+  #       aliases:
+  #         - pyhttprecv
+  #   ports:
+  #     - 5000:5000
+  #   command: --pg-host postgres --pg-port 5432
