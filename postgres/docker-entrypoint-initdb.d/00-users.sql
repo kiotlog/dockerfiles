@@ -30,6 +30,17 @@ CREATE USER kl_nodered WITH
 
 GRANT kl_writers TO kl_nodered;
 
+CREATE USER kl_webapi WITH
+  LOGIN
+  NOSUPERUSER
+  INHERIT
+  NOCREATEDB
+  NOCREATEROLE
+  NOREPLICATION
+  PASSWORD 'KlW3b4p1';
+
+GRANT kl_writers TO kl_webapi;
+
 -- Readers
 
 CREATE ROLE kl_readers WITH
