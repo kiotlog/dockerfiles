@@ -46,23 +46,42 @@ services:
         aliases:
           - mqtt-bridge
 
-  postgres:
+  catalog:
     build: ./postgres
-    image: kiotlog/postgres
+    image: kiotlog/catalog
     networks:
       ttn:
         aliases:
-          - kldb
+          - catalog
           - postgres
     ports:
       - 127.0.0.1:7432:5432
     volumes:
       - /var/lib/postgres/10:/var/lib/postgresql/data
 
+  api:
+    image: kiotlog/klapi
+    depends_on:
+      - catalog
+    networks:
+      ttn:
+        aliases:
+          - api
+    ports:
+      - 8888:8888
+    environment:
+      - host=0.0.0.0
+      - port=8888
+      - pguser=postgres
+      - pgpass=postgres
+      - pghost=catalog
+      - pgport=5432
+      - pgdb=trmpln
+
   klhr:
     image: kiotlog/httpreceiver
     depends_on:
-      - postgres
+      - catalog
       - emqtt
     networks:
       ttn:
@@ -71,29 +90,29 @@ services:
           - httpreceiver
     ports:
       - 8080:8080
-    command: --host 0.0.0.0 --mqttbroker emqtt 1883 --postgres kl_httpreceiver KlR3c3iv3r postgres 5432 trmpln
+    command: --host 0.0.0.0 --mqttbroker emqtt 1883 --postgres kl_httpreceiver KlR3c3iv3r catalog 5432 trmpln
 
   decoder:
     image: kiotlog/decoder
     depends_on:
-      - postgres
+      - catalog
       - emqtt
     networks:
       ttn:
         aliases:
           - decoder
-    command: --mqttbroker emqtt 1883 --postgres kl_decoder KlD3c0d3r postgres 5432 trmpln --topics /+/+/devices/+/up
+    command: --mqttbroker emqtt 1883 --postgres kl_decoder KlD3c0d3r catalog 5432 trmpln --topics /+/+/devices/+/up
 
   klsn:
     image: kiotlog/klsnreceiver
     depends_on:
-      - postgres
+      - catalog
       - emqtt
     networks:
       ttn:
         aliases:
           - klsn
-    command: --mqttbroker emqtt 1883 --postgres kl_snreceiver KLSnR3c3iv3r postgres 5432 trmpln
+    command: --mqttbroker emqtt 1883 --postgres kl_snreceiver KLSnR3c3iv3r catalog 5432 trmpln
 
   # pyhttprecv:
   #   image: kiotlog/pyhttprecv
