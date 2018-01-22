@@ -72,3 +72,14 @@ CREATE USER kl_httpreceiver WITH
   PASSWORD 'KlR3c3iv3r';
 
 GRANT kl_readers TO kl_httpreceiver;
+
+CREATE USER kl_snreceiver WITH
+  LOGIN
+  NOSUPERUSER
+  INHERIT
+  NOCREATEDB
+  NOCREATEROLE
+  NOREPLICATION
+  PASSWORD 'KLSnR3c3iv3r';
+
+GRANT kl_readers TO kl_snreceiver;
