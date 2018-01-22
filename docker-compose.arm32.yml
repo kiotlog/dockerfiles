@@ -6,8 +6,8 @@ networks:
 services:
   grafana:
     image: fg2it/grafana-armhf:v4.6.3
-    volumes:
-    - /var/lib/grafana:/var/lib/grafana
+    #volumes:
+    #- lib/grafana:/var/lib/grafana
     networks:
       ttn:
         aliases:
@@ -15,31 +15,30 @@ services:
     ports:
     - "3000:3000"
 
-  emqtt:
-    image: emqttd-docker-v2.3.3
-    environment:
-      - EMQ_WAIT_TIME=60
-      - EMQ_LOG__CONSOLE__LEVEL=error
-      - EMQ_ADMIN_PASSWORD=not_the_default_one
-      - EMQ_LOADED_PLUGINS=emq_recon,emq_modules,emq_retainer,emq_dashboard,emq_sn
-      - EMQ_MQTT__SN__PORT=2883
-      - EMQ_MQTT__SN__ENABLE_STATS=on
+  mqtt:
+    image: eclipse-mosquitto:arm32v7
     networks:
       ttn:
         aliases:
-          - emqtt
+          - mqtt
+          - mosquitto
     ports:
       - "1883:1883"
+
+  mqtt-sn:
+    build: ./rsmb
+    image: rsmb
+    networks:
+      ttn:
+        aliases:
+          - rsmb
+    ports:
       - "2883:2883/udp"
-      # - "8083:8083"
-      # - "8883:8883"
-      # - "8084:8084"
-      - "18083:18083"
 
   mqtt-bridge:
-    image: eclipse-mosquitto
+    image: eclipse-mosquitto:arm32v7
     depends_on:
-      - emqtt
+      - mqtt
     volumes:
       - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
     networks:
@@ -47,9 +46,9 @@ services:
         aliases:
           - mqtt-bridge
 
-  postgres:
+  catalog:
     build: ./postgres
-    image: kiotlog/postgres
+    image: kiotlog/catalog:arm32v7
     networks:
       ttn:
         aliases:
@@ -57,11 +56,11 @@ services:
           - postgres
     ports:
       - 127.0.0.1:7432:5432
-    volumes:
-      - /var/lib/postgres/10:/var/lib/postgresql/data
+        #    volumes:
+        #      - /var/lib/postgres/10:/var/lib/postgresql/data
 
   api:
-    image: kiotlog/klapi
+    image: kiotlog/klapi:arm32v7
     networks:
       ttn:
         aliases:
@@ -78,10 +77,10 @@ services:
       - pgdb=trmpln
 
   klhr:
-    image: kiotlog/httpreceiver
+    image: kiotlog/httpreceiver:arm32v7
     depends_on:
-      - postgres
-      - emqtt
+      - catalog
+      - mqtt
     networks:
       ttn:
         aliases:
@@ -89,36 +88,26 @@ services:
           - httpreceiver
     ports:
       - 8080:8080
-    command: --host 0.0.0.0 --mqttbroker emqtt 1883 --postgres kl_httpreceiver KlR3c3iv3r postgres 5432 trmpln
+    command: --host 0.0.0.0 --mqttbroker mqtt 1883 --postgres kl_httpreceiver KlR3c3iv3r postgres 5432 trmpln
 
   decoder:
-    image: kiotlog/decoder
+    image: kiotlog/decoder:arm32v7
     depends_on:
-      - postgres
-      - emqtt
+      - catalog
+      - mqtt
     networks:
       ttn:
         aliases:
           - decoder
-    command: --mqttbroker emqtt 1883 --postgres kl_decoder KlD3c0d3r postgres 5432 trmpln --topics /+/+/devices/+/up
+    command: --mqttbroker mqtt 1883 --postgres kl_decoder KlD3c0d3r postgres 5432 trmpln --topics /+/+/devices/+/up
 
   klsn:
-    image: kiotlog/klsnreceiver
+    image: kiotlog/klsnreceiver:arm32v7
     depends_on:
-      - postgres
-      - emqtt
+      - catalog
+      - mqtt
     networks:
       ttn:
         aliases:
           - klsn
-    command: --mqttbroker emqtt 1883 --postgres kl_snreceiver KLSnR3c3iv3r postgres 5432 trmpln
-
-  # pyhttprecv:
-  #   image: kiotlog/pyhttprecv
-  #   networks:
-  #     ttn:
-  #       aliases:
-  #         - pyhttprecv
-  #   ports:
-  #     - 5000:5000
-  #   command: --pg-host postgres --pg-port 5432
+    command: --mqttbroker mqtt 1883 --postgres kl_snreceiver KLSnR3c3iv3r postgres 5432 trmpln
