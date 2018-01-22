@@ -15,7 +15,7 @@ services:
     ports:
     - "3000:3000"
 
-  emqtt:
+  broker:
     image: emqttd-docker-v2.3.3
     environment:
       - EMQ_LOG__CONSOLE__LEVEL=error
@@ -26,7 +26,7 @@ services:
     networks:
       ttn:
         aliases:
-          - emqtt
+          - broker
     ports:
       - "1883:1883"
       - "2883:2883/udp"
@@ -38,7 +38,7 @@ services:
   mqtt-bridge:
     image: eclipse-mosquitto
     depends_on:
-      - emqtt
+      - broker
     volumes:
     - /var/lib/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
     networks:
@@ -82,7 +82,7 @@ services:
     image: kiotlog/httpreceiver
     depends_on:
       - catalog
-      - emqtt
+      - broker
     networks:
       ttn:
         aliases:
@@ -90,29 +90,29 @@ services:
           - httpreceiver
     ports:
       - 8080:8080
-    command: --host 0.0.0.0 --mqttbroker emqtt 1883 --postgres kl_httpreceiver KlR3c3iv3r catalog 5432 trmpln
+    command: --host 0.0.0.0 --mqttbroker broker 1883 --postgres kl_httpreceiver KlR3c3iv3r catalog 5432 trmpln
 
   decoder:
     image: kiotlog/decoder
     depends_on:
       - catalog
-      - emqtt
+      - broker
     networks:
       ttn:
         aliases:
           - decoder
-    command: --mqttbroker emqtt 1883 --postgres kl_decoder KlD3c0d3r catalog 5432 trmpln --topics /+/+/devices/+/up
+    command: --mqttbroker broker 1883 --postgres kl_decoder KlD3c0d3r catalog 5432 trmpln --topics /+/+/devices/+/up
 
   klsn:
     image: kiotlog/klsnreceiver
     depends_on:
       - catalog
-      - emqtt
+      - broker
     networks:
       ttn:
         aliases:
           - klsn
-    command: --mqttbroker emqtt 1883 --postgres kl_snreceiver KLSnR3c3iv3r catalog 5432 trmpln
+    command: --mqttbroker broker 1883 --postgres kl_snreceiver KLSnR3c3iv3r catalog 5432 trmpln
 
   # pyhttprecv:
   #   image: kiotlog/pyhttprecv
