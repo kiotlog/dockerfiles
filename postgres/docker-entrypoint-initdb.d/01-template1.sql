@@ -17,28 +17,28 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner:
 --
 
 CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
 
 --
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner:
 --
 
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
 --
--- Name: pgcrypto; Type: EXTENSION; Schema: -; Owner: 
+-- Name: pgcrypto; Type: EXTENSION; Schema: -; Owner:
 --
 
 CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA public;
 
 
 --
--- Name: EXTENSION pgcrypto; Type: COMMENT; Schema: -; Owner: 
+-- Name: EXTENSION pgcrypto; Type: COMMENT; Schema: -; Owner:
 --
 
 COMMENT ON EXTENSION pgcrypto IS 'cryptographic functions';
@@ -70,7 +70,7 @@ CREATE TABLE devices (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     device text NOT NULL,
     meta jsonb DEFAULT '{}'::jsonb NOT NULL,
-    auth jsonb DEFAULT '{}'::jsonb NOT NULL,
+    auth jsonb DEFAULT json_build_object('klsn', json_build_object('key', encode(gen_random_bytes(32), 'base64')),'basic', json_build_object('token', encode(gen_random_bytes(32), 'base64'))) NOT NULL,
     frame jsonb DEFAULT '{"bigendian": true, "bitfields": false}'::jsonb NOT NULL
 );
 
@@ -249,4 +249,3 @@ GRANT SELECT ON TABLE sensors TO kl_readers;
 --
 -- PostgreSQL database dump complete
 --
-
