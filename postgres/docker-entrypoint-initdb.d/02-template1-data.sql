@@ -22,7 +22,7 @@ SET search_path = public, pg_catalog;
 -- Data for Name: sensor_types; Type: TABLE DATA; Schema: public; Owner: kl_writers
 --
 
-COPY sensor_types (id, name, meta, type) FROM stdin;
+COPY sensor_types (id, name, meta, kind) FROM stdin;
 2e9e5330-5bde-4f5b-9c1f-52c96d73a05e	DHT11_Temperature	{"max": 50, "min": 0}	temperature
 d9508fcb-9061-41b6-a112-6849dd7c5739	DHT22_Humidity	{"max": 100, "min": 0}	humidity
 8b4f41b0-48ef-4004-b30c-8560b52cd3b7	Generic	{}	generic
