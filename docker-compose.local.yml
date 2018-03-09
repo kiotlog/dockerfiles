@@ -19,7 +19,7 @@ services:
     - "3000:3000"
 
   broker:
-    image: emqttd-docker-v2.3.3
+    image: emqttd-docker-v2.3.5
     environment:
       - EMQ_LOG__CONSOLE__LEVEL=error
       - EMQ_ADMIN_PASSWORD=not_the_default_one
@@ -61,6 +61,8 @@ services:
       - 127.0.0.1:7433:5432
     volumes:
       - ${COMPOSE_ROOTFS:-~/Build/srv/lib}/postgresql/10:/var/lib/postgresql/data
+    # command: -c "log_statement=all" -c "shared_preload_libraries= pg_stat_statements" -c "pg_stat_statements.track=all"
+    command: -c "log_statement=all" -c "shared_preload_libraries= pg_stat_statements" -c "pg_stat_statements.track=all"
 
   api:
     image: kiotlog/klapi
@@ -70,6 +72,7 @@ services:
           - api
     ports:
       - 80:8888
+      - 8888:8888
     environment:
       - host=0.0.0.0
       - port=8888
