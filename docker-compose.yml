@@ -19,7 +19,7 @@ services:
     - "3000:3000"
 
   broker:
-    image: emqttd-docker-v2.3.3
+    image: emqttd-docker-v2.3.5
     environment:
       - EMQ_LOG__CONSOLE__LEVEL=error
       - EMQ_ADMIN_PASSWORD=not_the_default_one
