@@ -1,0 +1,142 @@
+version: "3"
+
+networks:
+  ttn:
+
+services:
+  grafana:
+    image: grafana/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=not_the_default_one
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource,grafana-piechart-panel,grafana-worldmap-panel
+    networks:
+      ttn:
+        aliases:
+        - grafana
+    ports:
+    - "3000:3000"
+
+  broker:
+    image: emqttd-docker-v2.3.6
+    environment:
+      - EMQ_LOG__CONSOLE__LEVEL=error
+      - EMQ_ADMIN_PASSWORD=not_the_default_one
+      - EMQ_LOADED_PLUGINS="emq_recon,emq_modules,emq_retainer,emq_dashboard,emq_sn"
+      - EMQ_MQTT__SN__PORT=2883
+      - EMQ_MQTT__SN__ENABLE_STATS=on
+    networks:
+      ttn:
+        aliases:
+          - broker
+    ports:
+      - "1883:1883"
+      - "2883:2883/udp"
+      # - "8083:8083"
+      # - "8883:8883"
+      # - "8084:8084"
+      - "18083:18083"
+
+  mqtt-bridge:
+    image: eclipse-mosquitto
+    depends_on:
+      - broker
+    volumes:
+      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+    networks:
+      ttn:
+        aliases:
+          - mqtt-bridge
+
+  catalog:
+    build: ./postgres
+    image: kiotlog/catalog
+    networks:
+      ttn:
+        aliases:
+          - catalog
+          - postgres
+    ports:
+      - 127.0.0.1:7433:5432
+    # command: -c "log_statement=all" -c "shared_preload_libraries= pg_stat_statements" -c "pg_stat_statements.track=all"
+    command: -c "log_statement=all" -c "shared_preload_libraries= pg_stat_statements" -c "pg_stat_statements.track=all"
+
+  api:
+    image: kiotlog/klapi
+    networks:
+      ttn:
+        aliases:
+          - api
+    ports:
+      - 80:8888
+      - 8888:8888
+    environment:
+      - host=0.0.0.0
+      - port=8888
+      - pguser=kl_webapi
+      - pgpass=KlW3b4p1
+      - pghost=catalog
+      - pgport=5432
+      - pgdb=trmpln
+
+  klhr:
+    image: kiotlog/httpreceiver
+    depends_on:
+      - catalog
+      - broker
+    networks:
+      ttn:
+        aliases:
+          - klhr
+          - httpreceiver
+    ports:
+      - 8080:8080
+    command: --host 0.0.0.0 --mqttbroker broker 1883 --postgres kl_httpreceiver KlR3c3iv3r catalog 5432 trmpln
+
+  decoder:
+    image: kiotlog/decoder
+    depends_on:
+      - catalog
+      - broker
+    networks:
+      ttn:
+        aliases:
+          - decoder
+    command: --mqttbroker broker 1883 --postgres kl_decoder KlD3c0d3r catalog 5432 trmpln --topics /+/+/devices/+/up
+
+  klsn:
+    image: kiotlog/klsnreceiver
+    depends_on:
+      - catalog
+      - broker
+    networks:
+      ttn:
+        aliases:
+          - klsn
+    command: --mqttbroker broker 1883 --postgres kl_snreceiver KLSnR3c3iv3r catalog 5432 trmpln
+
+  # nodered:
+  #   image: nodered/node-red-docker
+  #   volumes:
+  #     - ${COMPOSE_ROOTFS:-~/Build/srv/lib}/nodered/data:/data
+  #     - ${COMPOSE_ROOTFS:-~/Build/srv/lib}/nodered/nodered_flows.json:/data/flows.json
+  #     - ${COMPOSE_ROOTFS:-~/Build/srv/lib}/nodered/nodered_settings.js:/data/settings.js
+  #   networks:
+  #     ttn:
+  #       aliases:
+  #       - mynodered
+  #   ports:
+  #     - "1880:1880"
+
+  # influxdb:
+  #   image: influxdb:alpine
+  #   volumes:
+  #     - ${COMPOSE_ROOTFS:-~/Build/srv/lib}/influxdb:/var/lib/influxdb
+  #   environment:
+  #     - INFLUXDB_ADMIN_ENABLED=false
+  #   networks:
+  #     ttn:
+  #       aliases:
+  #       - influxdb
+  #   ports:
+  #   # - "8083:8083"
+  #     - "127.0.0.1:8086:8086"
