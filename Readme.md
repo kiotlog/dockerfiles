@@ -30,7 +30,7 @@
 
 3.  Build Postgres image with Kiotlog DB schema
 
-        $ docker-compose build postgres
+        $ docker-compose build catalog
 
 4.  Download and load [EMQ](http://emqtt.io) MQTT server Docker image
 
