@@ -2,29 +2,44 @@
 
 ## Running locally
 
+0.  Clone repository
+        
+        $ git clone https://github.com/kiotlog/dockerfiles
+        $ cd dockerfiles
+
 1.  Create a directory tree for containers' persistent data and starting configuration:
 
-        [Dockerfiles]$ export COMPOSE_ROOT=<path to your base directory>
-        [Dockerfiles]$ ./build-persistent-rootfs.sh "$COMPOSE_ROOT"
+        $ export COMPOSE_ROOT=<path to your base directory>
+        $ ./build-persistent-rootfs.sh "$COMPOSE_ROOT"
 
-    Please, note that `${COMPOSE_ROOT}` will be automatically substituted in `docker-compose.local.yml` file. When missing will default to `~/Build/srv/lib`.
+    Please, note that `${COMPOSE_ROOT}` will be automatically substituted in `docker-compose.local.yml` file. When missing will default to `${HOME}/Build/srv/lib`.
 
 2.  Build Kiotlog microservices images:
 
-    Please, follow istructions at [Kiotlog](https://github.com/kiotlog/kiotlog).
+        $ cd ..
+        $ git clone --recurse-submodules http://github.com/kiotlog/kiotlog
+        $ cd kiotlog
+        $ docker-compose build
+        $ cd ..
+        $ git clone --recurse-submodules http://github.com/kiotlog/kiotlogweb
+        $ cd kiotlogweb
+        $ docker-compose build
+        $ cd ../dockerfiles
+
+    More info at [Kiotlog](https://github.com/kiotlog/kiotlog).
 
 3.  Build Postgres image with Kiotlog DB schema
 
-        [Dockerfiles]$ docker-compose build postgres
+        $ docker-compose build postgres
 
 4.  Download and load [EMQ](http://emqtt.io) MQTT server Docker image
 
-        [Dockerfiles]$ curl -fsSLo emqttd-docker.zip http://emqtt.io/downloads/latest/docker
-        [Dockerfiles]$ unzip -p emqttd-docker.zip | docker image load
+        $ curl -fsSLo emqttd-docker.zip http://emqtt.io/downloads/latest/docker
+        $ unzip -p emqttd-docker.zip | docker image load
 
 5.  Run docker-compose
 
-        [Dockerfiles]$ docker-compose -p <project name> -f docker-compose.local.yml up -d
-        [Dockerfiles]$ docker-compose -p <project name> -f docker-compose.local.yml ps
-        [Dockerfiles]$ docker-compose -p <project name> -f docker-compose.local.yml top
-        [Dockerfiles]$ docker-compose -p <project name> -f docker-compose.local.yml logs -f
+        $ docker-compose -p <project name> -f docker-compose.local.yml up -d
+        $ docker-compose -p <project name> -f docker-compose.local.yml ps
+        $ docker-compose -p <project name> -f docker-compose.local.yml top
+        $ docker-compose -p <project name> -f docker-compose.local.yml logs -f
