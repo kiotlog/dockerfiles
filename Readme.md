@@ -1,20 +1,13 @@
 # Docker Compose for Kiotlog
 
-## Running locally
+## Running storage-volumesly
 
 0.  Clone repository
         
         $ git clone https://github.com/kiotlog/dockerfiles
         $ cd dockerfiles
 
-1.  Create a directory tree for containers' persistent data and starting configuration:
-
-        $ export COMPOSE_ROOT=<path to your base directory>
-        $ ./build-persistent-rootfs.sh "$COMPOSE_ROOT"
-
-    Please, note that `${COMPOSE_ROOT}` will be automatically substituted in `docker-compose.local.yml` file. When missing will default to `${HOME}/Build/srv/lib`.
-
-2.  Build Kiotlog microservices images:
+1.  Build Kiotlog microservices images:
 
         $ cd ..
         $ git clone --recurse-submodules http://github.com/kiotlog/kiotlog
@@ -28,18 +21,20 @@
 
     More info at [Kiotlog](https://github.com/kiotlog/kiotlog).
 
-3.  Build Postgres image with Kiotlog DB schema
+2.  Build Postgres image with Kiotlog DB schema
 
         $ docker-compose build catalog
 
-4.  Download and load [EMQ](http://emqtt.io) MQTT server Docker image
+3.  Download and load [EMQ](http://emqtt.io) MQTT server Docker image
 
         $ curl -fsSLo emqttd-docker.zip http://emqtt.io/downloads/latest/docker
         $ unzip -p emqttd-docker.zip | docker image load
 
-5.  Run docker-compose
+4.  Run docker-compose
 
-        $ docker-compose -p <project name> -f docker-compose.local.yml up -d
-        $ docker-compose -p <project name> -f docker-compose.local.yml ps
-        $ docker-compose -p <project name> -f docker-compose.local.yml top
-        $ docker-compose -p <project name> -f docker-compose.local.yml logs -f
+        $ docker-compose up -d
+        $ docker-compose ps
+        $ docker-compose top
+        $ docker-compose logs -f
+
+Please, note that default `docker-compose.yml` will create plain persistent volumes. If you wish to persist data on local filesystem, please refer to `docker-compose.storage-bind.yml`.
