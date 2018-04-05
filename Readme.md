@@ -5,11 +5,9 @@
 0.  Clone repository
         
         $ git clone https://github.com/kiotlog/dockerfiles
-        $ cd dockerfiles
 
 1.  Build Kiotlog microservices images:
 
-        $ cd ..
         $ git clone --recurse-submodules http://github.com/kiotlog/kiotlog
         $ cd kiotlog
         $ docker-compose build
@@ -37,4 +35,4 @@
         $ docker-compose top
         $ docker-compose logs -f
 
-Please, note that default `docker-compose.yml` will create plain persistent volumes. If you wish to persist data on local filesystem, please refer to `docker-compose.storage-bind.yml`.
+Please, note that default `docker-compose.yml` will create plain persistent volumes. If you wish to persist data (**recommended**) on local filesystem, please refer to `docker-compose.storage-bind.yml`.
