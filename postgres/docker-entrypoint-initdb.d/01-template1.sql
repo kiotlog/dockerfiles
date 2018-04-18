@@ -100,7 +100,7 @@ CREATE TABLE sensor_types (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     name text DEFAULT 'generic'::text NOT NULL,
     meta jsonb DEFAULT '{}'::jsonb,
-    kind text DEFAULT 'generic'::text NOT NULL
+    type text DEFAULT 'generic'::text NOT NULL
 );
 
 
