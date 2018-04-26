@@ -38,6 +38,7 @@ services:
   mqtt-sn-gw:
     build: ./mqtt-sn-gw
     image: kiotlog/mqtt-sn-gw
+    restart: on-failure
     volumes:
       - ./mqtt-sn-gw/gateway.conf:/gateway.conf
     ports:
