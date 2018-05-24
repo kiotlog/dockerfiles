@@ -13,12 +13,11 @@ services:
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=not_the_default_one
       - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource,grafana-piechart-panel,grafana-worldmap-panel
+    user: "104"
     volumes:
       - type: volume
         source: grafana-data
         target: /var/lib/grafana
-        volume:
-          nocopy: true
     networks:
       ttn:
         aliases:
@@ -27,7 +26,7 @@ services:
     - "3000:3000"
 
   broker:
-    image: emqttd-docker-v2.3.6
+    image: emqttd-docker-v2.3.8
     environment:
       - EMQ_LOG__CONSOLE__LEVEL=error
       - EMQ_ADMIN_PASSWORD=not_the_default_one
@@ -80,7 +79,6 @@ services:
         aliases:
           - api
     ports:
-      - 80:8888
       - 8888:8888
     environment:
       - host=0.0.0.0
@@ -90,6 +88,15 @@ services:
       - pghost=catalog
       - pgport=5432
       - pgdb=trmpln
+
+  webui:
+    image: kiotlog/webui
+    networks:
+      ttn:
+        aliases:
+          - webui
+    ports:
+      - 80:80
 
   klhr:
     image: kiotlog/httpreceiver
