@@ -1,8 +1,8 @@
 {
   "__inputs": [
     {
-      "name": "DS_PGTRMPLN",
-      "label": "PgTrmpln",
+      "name": "KiotlogDB",
+      "label": "KiotlogDB",
       "description": "",
       "type": "datasource",
       "pluginId": "postgres",
@@ -65,7 +65,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": "${DS_PGTRMPLN}",
+      "datasource": "KiotlogDB",
       "decimals": 2,
       "format": "celsius",
       "gauge": {
@@ -179,7 +179,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": "${DS_PGTRMPLN}",
+      "datasource": "KiotlogDB",
       "decimals": 1,
       "format": "pressurehpa",
       "gauge": {
@@ -293,7 +293,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": "${DS_PGTRMPLN}",
+      "datasource": "KiotlogDB",
       "decimals": 1,
       "format": "percent",
       "gauge": {
@@ -407,7 +407,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#299c46"
       ],
-      "datasource": "${DS_PGTRMPLN}",
+      "datasource": "KiotlogDB",
       "decimals": 2,
       "format": "volt",
       "gauge": {
@@ -517,7 +517,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_PGTRMPLN}",
+      "datasource": "KiotlogDB",
       "fill": 1,
       "gridPos": {
         "h": 7,
@@ -597,7 +597,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_PGTRMPLN}",
+      "datasource": "KiotlogDB",
       "fill": 1,
       "gridPos": {
         "h": 7,
@@ -677,7 +677,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_PGTRMPLN}",
+      "datasource": "KiotlogDB",
       "fill": 1,
       "gridPos": {
         "h": 7,
@@ -757,7 +757,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_PGTRMPLN}",
+      "datasource": "KiotlogDB",
       "fill": 1,
       "gridPos": {
         "h": 7,
@@ -871,7 +871,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_PGTRMPLN}",
+      "datasource": "KiotlogDB",
       "fill": 1,
       "gridPos": {
         "h": 12,
@@ -951,7 +951,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_PGTRMPLN}",
+      "datasource": "KiotlogDB",
       "fill": 1,
       "gridPos": {
         "h": 12,
@@ -1031,7 +1031,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_PGTRMPLN}",
+      "datasource": "KiotlogDB",
       "fill": 1,
       "gridPos": {
         "h": 12,
@@ -1111,7 +1111,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_PGTRMPLN}",
+      "datasource": "KiotlogDB",
       "fill": 0,
       "gridPos": {
         "h": 12,
@@ -1196,7 +1196,7 @@
       {
         "allValue": null,
         "current": {},
-        "datasource": "${DS_PGTRMPLN}",
+        "datasource": "KiotlogDB",
         "hide": 0,
         "includeAll": false,
         "label": null,
@@ -1303,7 +1303,7 @@
     ]
   },
   "time": {
-    "from": "now-7d",
+    "from": "now-15m",
     "to": "now"
   },
   "timepicker": {

@@ -1,0 +1,16 @@
+apiVersion: 1
+
+deleteDatasources:
+  - name: KiotlogDB
+    orgId: 1
+
+datasources:
+  - name: KiotlogDB
+    type: postgres
+    url: catalog:5432
+    database: trmpln
+    user: kl_grafana
+    secureJsonData:
+      password: "KlGr4f4n4"
+    jsonData:
+      sslmode: "disable"
