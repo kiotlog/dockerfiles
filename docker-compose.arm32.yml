@@ -3,6 +3,10 @@ version: "3"
 networks:
   ttn:
 
+volumes:
+  catalog-data:
+  grafana-data:
+
 services:
   grafana:
     image: fg2it/grafana-armhf:v4.6.3
@@ -10,7 +14,18 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=not_the_default_one
       - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource,grafana-piechart-panel,grafana-worldmap-panel
     volumes:
-    - /var/lib/grafana:/var/lib/grafana
+      - type: volume
+        source: grafana-data
+        target: /var/lib/grafana
+      - type: bind
+        source: ./grafana/KiotlogDataSource.yml
+        target: /etc/grafana/provisioning/datasources/KiotlogDataSource.yml
+      - type: bind
+        source: ./grafana/KiotlogDashboardProvider.yml
+        target: /etc/grafana/provisioning/dashboards/KiotlogDashboardProvider.yml
+      - type: bind
+        source: ./grafana/KiotlogDashboardDemo.json
+        target: /var/lib/kiotlog/KiotlogDashboardDemo.json
     networks:
       ttn:
         aliases:
@@ -19,7 +34,7 @@ services:
     - "3000:3000"
 
   broker:
-    image: emqttd-docker-v2.3.3
+    image: kiotlog/emqttd:arm32
     environment:
       - EMQ_WAIT_TIME=60
       - EMQ_LOG__CONSOLE__LEVEL=error
@@ -116,12 +131,3 @@ services:
           - klsn
     command: --mqttbroker broker 1883 --postgres kl_snreceiver KLSnR3c3iv3r postgres 5432 trmpln
 
-  # pyhttprecv:
-  #   image: kiotlog/pyhttprecv
-  #   networks:
-  #     ttn:
-  #       aliases:
-  #         - pyhttprecv
-  #   ports:
-  #     - 5000:5000
-  #   command: --pg-host postgres --pg-port 5432

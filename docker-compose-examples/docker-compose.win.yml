@@ -17,7 +17,7 @@ services:
     - "3000:3000"
 
   broker:
-    image: emqttd-docker-v2.3.6
+    image: kiotlog/emqttd
     environment:
       - EMQ_LOG__CONSOLE__LEVEL=error
       - EMQ_ADMIN_PASSWORD=not_the_default_one
@@ -114,29 +114,3 @@ services:
           - klsn
     command: --mqttbroker broker 1883 --postgres kl_snreceiver KLSnR3c3iv3r catalog 5432 trmpln
 
-  # nodered:
-  #   image: nodered/node-red-docker
-  #   volumes:
-  #     - ${COMPOSE_ROOTFS:-~/Build/srv/lib}/nodered/data:/data
-  #     - ${COMPOSE_ROOTFS:-~/Build/srv/lib}/nodered/nodered_flows.json:/data/flows.json
-  #     - ${COMPOSE_ROOTFS:-~/Build/srv/lib}/nodered/nodered_settings.js:/data/settings.js
-  #   networks:
-  #     ttn:
-  #       aliases:
-  #       - mynodered
-  #   ports:
-  #     - "1880:1880"
-
-  # influxdb:
-  #   image: influxdb:alpine
-  #   volumes:
-  #     - ${COMPOSE_ROOTFS:-~/Build/srv/lib}/influxdb:/var/lib/influxdb
-  #   environment:
-  #     - INFLUXDB_ADMIN_ENABLED=false
-  #   networks:
-  #     ttn:
-  #       aliases:
-  #       - influxdb
-  #   ports:
-  #   # - "8083:8083"
-  #     - "127.0.0.1:8086:8086"
