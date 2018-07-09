@@ -1,0 +1,32 @@
+version: "3.6"
+
+networks:
+  paho:
+
+services:
+  mosquitto:
+    image: eclipse-mosquitto
+    networks:
+      paho:
+        aliases:
+          - mqtt
+          - mosquitto
+          - broker
+    ports:
+      - 1883:1883/tcp
+      - 8883:8883/tcp
+
+  mqttsngw:
+    image: mqtt-sn-gw
+    build: ./mqtt-sn-gw
+    restart: on-failure
+    networks:
+      paho:
+        aliases:
+          - mqttsn
+    ports:
+      - 1883:1883/udp
+      - 2883:1883/udp
+    volumes:
+      - ./mqtt-sn-gw/gateway.conf:/gateway.conf
+
