@@ -35,7 +35,7 @@ services:
     - "3000:3000"
 
   broker:
-    image: kiotlog/emqttd
+    image: emqx/emqx
     environment:
       - EMQ_LOG__CONSOLE__LEVEL=error
       - EMQ_ADMIN_PASSWORD=not_the_default_one
@@ -141,5 +141,4 @@ services:
       ttn:
         aliases:
           - klsn
-    command: --mqttbroker broker 1883 --postgres kl_snreceiver KLSnR3c3iv3r catalog 5432 trmpln
-
+    command: --mqttbroker broker 1883 --topics "/klsn/+/+" "/klsnts/+/+" --postgres kl_snreceiver KLSnR3c3iv3r catalog 5432 trmpln

@@ -85,6 +85,7 @@ CREATE TABLE points (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     device_id uuid NOT NULL,
     "time" timestamp with time zone DEFAULT now() NOT NULL,
+    writetime timestamp with time zone DEFAULT now(),
     flags jsonb DEFAULT '{}'::jsonb NOT NULL,
     data jsonb DEFAULT '{}'::jsonb NOT NULL
 );
